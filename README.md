@@ -22,7 +22,4 @@ El sistema fue construido utilizando el framework **Django (Python)** con una ba
 - Gestión interna de **Usuarios** a través del panel administrativo de Django.  
 - Interfaz web limpia e intuitiva (formulario + tablas dinámicas).  
 - Autenticación segura mediante el módulo de administración.  
-- Validación automática de datos y mensajes de error controlados.  
-
-
-## 🗂️ Estructura del Proyecto
+- Validación automática de datos y mensajes de error controlados. 
