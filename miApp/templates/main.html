@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Panel de Calificaciones y Usuarios - NUAM</title>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #f3f4f6;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+
+      header {
+        background-color: #0b5cad;
+        color: white;
+        padding: 15px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      header h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+
+      nav a {
+        color: white;
+        text-decoration: none;
+        margin-right: 15px;
+        font-size: 14px;
+      }
+
+      nav a:hover {
+        text-decoration: underline;
+      }
+
+      main {
+        max-width: 1000px;
+        margin: 25px auto;
+        background: white;
+        padding: 20px 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        border-bottom: 2px solid #0b5cad;
+        padding-bottom: 5px;
+        color: #0b5cad;
+      }
+
+      form {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      label {
+        font-weight: bold;
+        font-size: 13px;
+      }
+
+      input,
+      select {
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      button {
+        grid-column: span 2;
+        padding: 10px;
+        background-color: #0b5cad;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      button:hover {
+        background-color: #094d91;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 25px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+
+      th {
+        background-color: #0b5cad;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9fafb;
+      }
+
+      tr:hover {
+        background-color: #eef2ff;
+      }
+
+      footer {
+        text-align: center;
+        color: #777;
+        font-size: 13px;
+        padding: 15px;
+        margin-top: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>NUAM - Sistema de Calificaciones y Usuarios</h1>
+      <nav>
+        <a href="#">Inicio</a>
+        <a href="#">Cargas</a>
+        <a href="#">Reportes</a>
+        <a href="#">Usuarios</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>Registrar nueva calificación</h2>
+      <form>
+        <div>
+          <label>RUT Cliente</label>
+          <input type="text" placeholder="11.111.111-1" />
+        </div>
+        <div>
+          <label>Instrumento</label>
+          <input type="text" placeholder="Acción / Bono / Fondo" />
+        </div>
+        <div>
+          <label>Tipo de Calificación</label>
+          <input type="text" placeholder="AA+, A-, BBB..." />
+        </div>
+        <div>
+          <label>Fecha</label>
+          <input type="date" />
+        </div>
+        <div>
+          <label>Estado</label>
+          <select>
+            <option value="vigente">Vigente</option>
+            <option value="vencida">Vencida</option>
+            <option value="en_revision">En revisión</option>
+          </select>
+        </div>
+        <button type="submit">Guardar Calificación</button>
+      </form>
+
+      <h2>Calificaciones Registradas</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>RUT</th>
+            <th>Instrumento</th>
+            <th>Tipo</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if calificaciones %} {% for c in calificaciones %}
+          <tr>
+            <td>{{ c.rut_cliente }}</td>
+            <td>{{ c.instrumento }}</td>
+            <td>{{ c.tipo_calificacion }}</td>
+            <td>{{ c.fecha_calificacion }}</td>
+            <td>{{ c.estado }}</td>
+          </tr>
+          {% endfor %} {% else %}
+          <tr>
+            <td colspan="5">No hay calificaciones registradas.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+
+      <!-- 🔽 NUEVA SECCIÓN DE USUARIOS -->
+      <h2>Usuarios Registrados</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if usuarios %} {% for u in usuarios %}
+          <tr>
+            <td>{{ u.nombre }}</td>
+            <td>{{ u.correo }}</td>
+            <td>{{ u.rol }}</td>
+          </tr>
+          {% endfor %} {% else %}
+          <tr>
+            <td colspan="3">No hay usuarios registrados.</td>
+          </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </main>
+
+    <footer>Sistema NUAM © 2025 | Proyecto Integrado</footer>
+  </body>
+</html>
