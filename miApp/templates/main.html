@@ -2,107 +2,184 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Panel de Calificaciones y Usuarios - NUAM</title>
+    <title>NUAM - Mantenedor de Calificaciones</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+      :root {
+        --azul: #0b5cad;
+        --azul-oscuro: #094d91;
+        --gris-fondo: #f3f4f6;
+        --gris-borde: #e5e7eb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
         font-family: Arial, Helvetica, sans-serif;
-        background-color: #f3f4f6;
+        background-color: var(--gris-fondo);
         margin: 0;
-        padding: 0;
         color: #333;
+        display: flex;
+        min-height: 100vh;
+      }
+
+      /* LATERAL */
+      aside {
+        width: 210px;
+        background: #083863;
+        color: #fff;
+        padding: 20px 15px;
+      }
+
+      aside h2 {
+        font-size: 15px;
+        margin-bottom: 20px;
+        letter-spacing: 0.5px;
+      }
+
+      .menu a {
+        display: block;
+        color: #fff;
+        text-decoration: none;
+        padding: 8px 6px;
+        border-radius: 4px;
+        margin-bottom: 5px;
+        font-size: 13px;
+        transition: background 0.2s ease;
+      }
+
+      .menu a.activo,
+      .menu a:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      /* CONTENIDO */
+      .contenedor {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
       }
 
       header {
-        background-color: #0b5cad;
+        background-color: var(--azul);
         color: white;
-        padding: 15px 25px;
+        padding: 12px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
       header h1 {
-        font-size: 20px;
+        font-size: 18px;
         margin: 0;
       }
 
-      nav a {
-        color: white;
-        text-decoration: none;
-        margin-right: 15px;
-        font-size: 14px;
-      }
-
-      nav a:hover {
-        text-decoration: underline;
+      header span {
+        font-size: 12px;
+        opacity: 0.85;
       }
 
       main {
-        max-width: 1000px;
-        margin: 25px auto;
+        max-width: 1100px;
+        width: 100%;
+        margin: 20px auto;
+        padding: 0 15px 40px;
+      }
+
+      .panel {
         background: white;
-        padding: 20px 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.015);
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.03);
+        padding: 18px 20px;
+        margin-bottom: 22px;
       }
 
-      h2 {
-        border-bottom: 2px solid #0b5cad;
-        padding-bottom: 5px;
-        color: #0b5cad;
+      .panel h2 {
+        border-bottom: 2px solid var(--azul);
+        padding-bottom: 6px;
+        color: var(--azul);
+        font-size: 16px;
+        margin-top: 0;
+        letter-spacing: 0.2px;
       }
 
+      /* FORMULARIO */
       form {
-        margin-top: 10px;
+        margin-top: 12px;
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 12px 15px;
       }
 
       label {
         font-weight: bold;
-        font-size: 13px;
+        font-size: 12.5px;
+        margin-bottom: 2px;
+        display: block;
       }
 
       input,
       select {
-        padding: 6px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+        width: 100%;
+        padding: 7px 8px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #fff;
+        font-size: 13px;
       }
 
-      button {
-        grid-column: span 2;
-        padding: 10px;
-        background-color: #0b5cad;
+      input:focus,
+      select:focus {
+        outline: 2px solid rgba(11, 92, 173, 0.1);
+        border-color: var(--azul);
+      }
+
+      .full {
+        grid-column: 1 / -1;
+      }
+
+      button,
+      .btn {
+        background-color: var(--azul);
         color: white;
         border: none;
-        border-radius: 5px;
+        border-radius: 6px;
+        padding: 9px 15px;
         cursor: pointer;
         font-weight: bold;
+        font-size: 13px;
+        transition: background 0.15s ease;
       }
 
-      button:hover {
-        background-color: #094d91;
+      button:hover,
+      .btn:hover {
+        background-color: var(--azul-oscuro);
       }
 
+      /* TABLAS */
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 25px;
-        font-size: 14px;
+        margin-top: 15px;
+        font-size: 13px;
+        overflow: hidden;
+        border-radius: 8px;
       }
 
       th,
       td {
-        border: 1px solid #ddd;
-        padding: 8px;
+        border: 1px solid #e2e8f0;
+        padding: 8px 6px;
         text-align: center;
       }
 
       th {
-        background-color: #0b5cad;
+        background-color: var(--azul);
         color: white;
+        font-weight: 600;
       }
 
       tr:nth-child(even) {
@@ -113,110 +190,240 @@
         background-color: #eef2ff;
       }
 
+      .acciones form {
+        display: inline;
+      }
+
+      .acciones button {
+        margin: 0 2px;
+        padding: 4px 8px;
+        font-size: 12px;
+        border-radius: 4px;
+      }
+
+      .badge {
+        display: inline-block;
+        min-width: 90px;
+        padding: 3px 8px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: bold;
+        color: #fff;
+      }
+      .vigente {
+        background: #16a34a;
+      }
+      .vencida {
+        background: #dc2626;
+      }
+      .revision {
+        background: #ca8a04;
+      }
+
       footer {
         text-align: center;
         color: #777;
-        font-size: 13px;
-        padding: 15px;
-        margin-top: 25px;
+        font-size: 12px;
+        padding: 10px 0 0;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 900px) {
+        body {
+          flex-direction: column;
+        }
+        aside {
+          width: 100%;
+          display: flex;
+          gap: 10px;
+          overflow-x: auto;
+        }
+        form {
+          grid-template-columns: 1fr;
+        }
+        table {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>NUAM - Sistema de Calificaciones y Usuarios</h1>
-      <nav>
-        <a href="#">Inicio</a>
-        <a href="#">Cargas</a>
+    <!-- LATERAL -->
+    <aside>
+      <h2>NUAM Panel</h2>
+      <div class="menu">
+        <a class="activo" href="#">Calificaciones</a>
+        <a href="#">Cargas DJ1948</a>
         <a href="#">Reportes</a>
         <a href="#">Usuarios</a>
-      </nav>
-    </header>
+        <a href="#">Configuración</a>
+      </div>
+    </aside>
 
-    <main>
-      <h2>Registrar nueva calificación</h2>
-      <form>
-        <div>
-          <label>RUT Cliente</label>
-          <input type="text" placeholder="11.111.111-1" />
-        </div>
-        <div>
-          <label>Instrumento</label>
-          <input type="text" placeholder="Acción / Bono / Fondo" />
-        </div>
-        <div>
-          <label>Tipo de Calificación</label>
-          <input type="text" placeholder="AA+, A-, BBB..." />
-        </div>
-        <div>
-          <label>Fecha</label>
-          <input type="date" />
-        </div>
-        <div>
-          <label>Estado</label>
-          <select>
-            <option value="vigente">Vigente</option>
-            <option value="vencida">Vencida</option>
-            <option value="en_revision">En revisión</option>
-          </select>
-        </div>
-        <button type="submit">Guardar Calificación</button>
-      </form>
+    <!-- CONTENIDO -->
+    <div class="contenedor">
+      <header>
+        <h1>Sistema de Calificaciones y Usuarios</h1>
+        <span>Usuario actual: admin@nuam.cl</span>
+      </header>
 
-      <h2>Calificaciones Registradas</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>RUT</th>
-            <th>Instrumento</th>
-            <th>Tipo</th>
-            <th>Fecha</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if calificaciones %} {% for c in calificaciones %}
-          <tr>
-            <td>{{ c.rut_cliente }}</td>
-            <td>{{ c.instrumento }}</td>
-            <td>{{ c.tipo_calificacion }}</td>
-            <td>{{ c.fecha_calificacion }}</td>
-            <td>{{ c.estado }}</td>
-          </tr>
-          {% endfor %} {% else %}
-          <tr>
-            <td colspan="5">No hay calificaciones registradas.</td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
+      <main>
+        <!-- PANEL CALIFICACIONES -->
+        <section class="panel" aria-label="Registro de calificaciones">
+          <h2>Registrar nueva calificación</h2>
+          <form action="" method="POST">
+            {% csrf_token %}
+            <div>
+              <label for="rut">RUT Cliente *</label>
+              <input
+                id="rut"
+                name="rut"
+                type="text"
+                placeholder="11.111.111-1"
+                required
+              />
+            </div>
+            <div>
+              <label for="instrumento">Instrumento *</label>
+              <input
+                id="instrumento"
+                name="instrumento"
+                type="text"
+                placeholder="Acción / Bono / Fondo"
+                required
+              />
+            </div>
+            <div>
+              <label for="tipo">Tipo de Calificación *</label>
+              <input
+                id="tipo"
+                name="calificacion"
+                type="text"
+                placeholder="AA+, A-, BBB..."
+                required
+              />
+            </div>
+            <div>
+              <label for="fecha">Fecha *</label>
+              <input id="fecha" name="fecha" type="date" required />
+            </div>
+            <div>
+              <label for="estado">Estado *</label>
+              <select id="estado" name="estado" required>
+                <option value="">Seleccione...</option>
+                <option value="vigente">Vigente</option>
+                <option value="vencida">Vencida</option>
+                <option value="en_revision">En revisión</option>
+              </select>
+            </div>
+            <div class="full">
+              <label for="obs">Observación (opcional)</label>
+              <input
+                id="obs"
+                name="observacion"
+                type="text"
+                placeholder="Detalle o comentario interno"
+              />
+            </div>
+            <button type="submit">Guardar calificación</button>
+          </form>
+        </section>
 
-      <!-- 🔽 NUEVA SECCIÓN DE USUARIOS -->
-      <h2>Usuarios Registrados</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Rol</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% if usuarios %} {% for u in usuarios %}
-          <tr>
-            <td>{{ u.nombre }}</td>
-            <td>{{ u.correo }}</td>
-            <td>{{ u.rol }}</td>
-          </tr>
-          {% endfor %} {% else %}
-          <tr>
-            <td colspan="3">No hay usuarios registrados.</td>
-          </tr>
-          {% endif %}
-        </tbody>
-      </table>
-    </main>
+        <!-- LISTADO CALIFICACIONES -->
+        <section class="panel" aria-label="Listado de calificaciones">
+          <h2>Calificaciones registradas</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>RUT</th>
+                <th>Instrumento</th>
+                <th>Tipo</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if calificaciones %} {% for c in calificaciones %}
+              <tr>
+                <td>{{ c.rut_cliente }}</td>
+                <td>{{ c.instrumento }}</td>
+                <td>{{ c.tipo_calificacion }}</td>
+                <td>{{ c.fecha_calificacion }}</td>
+                <td>
+                  {% if c.estado == 'vigente' %}
+                  <span class="badge vigente">Vigente</span>
+                  {% elif c.estado == 'vencida' %}
+                  <span class="badge vencida">Vencida</span>
+                  {% else %}
+                  <span class="badge revision">En revisión</span>
+                  {% endif %}
+                </td>
+                <td class="acciones">
+                  <button type="button">Editar</button>
+                  <button type="button">Eliminar</button>
+                </td>
+              </tr>
+              {% endfor %} {% else %}
+              <tr>
+                <td colspan="6">No hay calificaciones registradas.</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </section>
 
-    <footer>Sistema NUAM © 2025 | Proyecto Integrado</footer>
+        <!-- LISTADO USUARIOS -->
+        <section class="panel" aria-label="Usuarios del sistema">
+          <h2>Usuarios registrados</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if usuarios %} {% for u in usuarios %}
+              <tr>
+                <td>{{ u.nombre }}</td>
+                <td>{{ u.correo }}</td>
+                <td>{{ u.rol }}</td>
+                <td class="acciones">
+                  <!-- Botón Editar -->
+                  <form action="{% url 'editar_usuario' u.id %}" method="GET">
+                    <button type="submit">Editar</button>
+                  </form>
+                  <!-- Botón Desactivar -->
+                  <form
+                    action="{% url 'desactivar_usuario' u.id %}"
+                    method="POST"
+                  >
+                    {% csrf_token %}
+                    <button
+                      type="submit"
+                      onclick="return confirm('¿Seguro que deseas desactivar este usuario?')"
+                    >
+                      Desactivar
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              {% endfor %} {% else %}
+              <tr>
+                <td colspan="4">No hay usuarios registrados.</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </section>
+
+        <footer>Sistema NUAM © 2025 | Proyecto Integrado</footer>
+      </main>
+    </div>
   </body>
 </html>

@@ -14,7 +14,7 @@ class Calificacion(models.Model):
     tipo_calificacion = models.CharField(max_length=20)
     fecha_calificacion = models.DateField()
     estado = models.CharField(max_length=20, default='vigente')
-    # si quieres enlazar con usuario:
+    # enlace con usuario:
     creado_por = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
