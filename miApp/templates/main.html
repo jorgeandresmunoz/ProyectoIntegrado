@@ -9,13 +9,10 @@
         --azul: #0b5cad;
         --azul-oscuro: #094d91;
         --gris-fondo: #f3f4f6;
-        --gris-borde: #e5e7eb;
       }
-
       * {
         box-sizing: border-box;
       }
-
       body {
         font-family: Arial, Helvetica, sans-serif;
         background-color: var(--gris-fondo);
@@ -24,21 +21,17 @@
         display: flex;
         min-height: 100vh;
       }
-
-      /* LATERAL */
       aside {
         width: 210px;
         background: #083863;
         color: #fff;
         padding: 20px 15px;
       }
-
       aside h2 {
         font-size: 15px;
         margin-bottom: 20px;
         letter-spacing: 0.5px;
       }
-
       .menu a {
         display: block;
         color: #fff;
@@ -49,19 +42,15 @@
         font-size: 13px;
         transition: background 0.2s ease;
       }
-
       .menu a.activo,
       .menu a:hover {
         background: rgba(255, 255, 255, 0.12);
       }
-
-      /* CONTENIDO */
       .contenedor {
         flex: 1;
         display: flex;
         flex-direction: column;
       }
-
       header {
         background-color: var(--azul);
         color: white;
@@ -70,24 +59,38 @@
         justify-content: space-between;
         align-items: center;
       }
-
       header h1 {
         font-size: 18px;
         margin: 0;
       }
-
-      header span {
+      .user-box {
+        display: flex;
+        gap: 10px;
+        align-items: center;
         font-size: 12px;
-        opacity: 0.85;
       }
-
+      .logout-form {
+        display: inline;
+      }
+      .logout-btn {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        padding: 4px 10px;
+        border-radius: 9999px;
+        border: none;
+        font-weight: bold;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .logout-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
       main {
         max-width: 1100px;
         width: 100%;
         margin: 20px auto;
         padding: 0 15px 40px;
       }
-
       .panel {
         background: white;
         border-radius: 12px;
@@ -96,7 +99,6 @@
         padding: 18px 20px;
         margin-bottom: 22px;
       }
-
       .panel h2 {
         border-bottom: 2px solid var(--azul);
         padding-bottom: 6px;
@@ -105,22 +107,18 @@
         margin-top: 0;
         letter-spacing: 0.2px;
       }
-
-      /* FORMULARIO */
       form {
         margin-top: 12px;
         display: grid;
         grid-template-columns: repeat(3, minmax(180px, 1fr));
         gap: 12px 15px;
       }
-
       label {
         font-weight: bold;
         font-size: 12.5px;
         margin-bottom: 2px;
         display: block;
       }
-
       input,
       select {
         width: 100%;
@@ -130,17 +128,14 @@
         background: #fff;
         font-size: 13px;
       }
-
       input:focus,
       select:focus {
         outline: 2px solid rgba(11, 92, 173, 0.1);
         border-color: var(--azul);
       }
-
       .full {
         grid-column: 1 / -1;
       }
-
       button,
       .btn {
         background-color: var(--azul);
@@ -153,13 +148,14 @@
         font-size: 13px;
         transition: background 0.15s ease;
       }
-
       button:hover,
       .btn:hover {
         background-color: var(--azul-oscuro);
       }
-
-      /* TABLAS */
+      button[disabled] {
+        background-color: #a0aec0;
+        cursor: not-allowed;
+      }
       table {
         width: 100%;
         border-collapse: collapse;
@@ -168,39 +164,32 @@
         overflow: hidden;
         border-radius: 8px;
       }
-
       th,
       td {
         border: 1px solid #e2e8f0;
         padding: 8px 6px;
         text-align: center;
       }
-
       th {
         background-color: var(--azul);
         color: white;
         font-weight: 600;
       }
-
       tr:nth-child(even) {
         background-color: #f9fafb;
       }
-
       tr:hover {
         background-color: #eef2ff;
       }
-
       .acciones form {
         display: inline;
       }
-
       .acciones button {
         margin: 0 2px;
         padding: 4px 8px;
         font-size: 12px;
         border-radius: 4px;
       }
-
       .badge {
         display: inline-block;
         min-width: 90px;
@@ -219,15 +208,31 @@
       .revision {
         background: #ca8a04;
       }
-
+      .msg {
+        background: #e0f2fe;
+        border: 1px solid #7dd3fc;
+        color: #0f172a;
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        font-size: 13px;
+      }
+      #alerta-permiso {
+        display: none;
+        background: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #b91c1c;
+        padding: 8px 12px;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        font-size: 13px;
+      }
       footer {
         text-align: center;
         color: #777;
         font-size: 12px;
         padding: 10px 0 0;
       }
-
-      /* RESPONSIVE */
       @media (max-width: 900px) {
         body {
           flex-direction: column;
@@ -250,31 +255,41 @@
     </style>
   </head>
   <body>
-    <!-- LATERAL -->
     <aside>
       <h2>NUAM Panel</h2>
       <div class="menu">
-        <a class="activo" href="#">Calificaciones</a>
-        <a href="#">Cargas DJ1948</a>
-        <a href="#">Reportes</a>
-        <a href="#">Usuarios</a>
+        <a class="activo" href="#">Calificaciones y usuarios</a>
         <a href="#">Configuración</a>
       </div>
     </aside>
 
-    <!-- CONTENIDO -->
     <div class="contenedor">
       <header>
         <h1>Sistema de Calificaciones y Usuarios</h1>
-        <span>Usuario actual: admin@nuam.cl</span>
+        <div class="user-box">
+          <span>Usuario actual: {{ user.email|default:user.username }}</span>
+          <form action="/accounts/logout/" method="POST" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Cerrar sesión</button>
+          </form>
+        </div>
       </header>
 
       <main>
-        <!-- PANEL CALIFICACIONES -->
+        {% if messages %} {% for message in messages %}
+        <div class="msg">{{ message }}</div>
+        {% endfor %} {% endif %}
+
+        <div id="alerta-permiso">
+          ⚠️ No tienes permisos para desactivar usuarios.
+        </div>
+
+        <!-- FORMULARIO CALIFICACIONES -->
         <section class="panel" aria-label="Registro de calificaciones">
           <h2>Registrar nueva calificación</h2>
           <form action="" method="POST">
             {% csrf_token %}
+            <input type="hidden" name="form_type" value="calificacion" />
             <div>
               <label for="rut">RUT Cliente *</label>
               <input
@@ -331,6 +346,43 @@
           </form>
         </section>
 
+        <!-- FORMULARIO USUARIOS -->
+        <section class="panel" aria-label="Registro de usuarios">
+          <h2>Registrar nuevo usuario</h2>
+          <form action="" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="usuario" />
+            <div>
+              <label for="nombre_u">Nombre *</label>
+              <input
+                id="nombre_u"
+                name="nombre"
+                type="text"
+                placeholder="Nombre completo"
+                required
+              />
+            </div>
+            <div>
+              <label for="correo_u">Correo *</label>
+              <input
+                id="correo_u"
+                name="correo"
+                type="email"
+                placeholder="correo@ejemplo.com"
+                required
+              />
+            </div>
+            <div>
+              <label for="rol_u">Rol</label>
+              <select id="rol_u" name="rol">
+                <option value="analista">Analista</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+            <button type="submit">Guardar usuario</button>
+          </form>
+        </section>
+
         <!-- LISTADO CALIFICACIONES -->
         <section class="panel" aria-label="Listado de calificaciones">
           <h2>Calificaciones registradas</h2>
@@ -342,6 +394,7 @@
                 <th>Tipo</th>
                 <th>Fecha</th>
                 <th>Estado</th>
+                <th>Observación</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -361,14 +414,17 @@
                   <span class="badge revision">En revisión</span>
                   {% endif %}
                 </td>
+                <td>{{ c.observacion|default:"-" }}</td>
                 <td class="acciones">
                   <button type="button">Editar</button>
+                  {% if user.is_superuser %}
                   <button type="button">Eliminar</button>
+                  {% endif %}
                 </td>
               </tr>
               {% endfor %} {% else %}
               <tr>
-                <td colspan="6">No hay calificaciones registradas.</td>
+                <td colspan="7">No hay calificaciones registradas.</td>
               </tr>
               {% endif %}
             </tbody>
@@ -394,11 +450,10 @@
                 <td>{{ u.correo }}</td>
                 <td>{{ u.rol }}</td>
                 <td class="acciones">
-                  <!-- Botón Editar -->
                   <form action="{% url 'editar_usuario' u.id %}" method="GET">
                     <button type="submit">Editar</button>
                   </form>
-                  <!-- Botón Desactivar -->
+                  {% if user.is_superuser %}
                   <form
                     action="{% url 'desactivar_usuario' u.id %}"
                     method="POST"
@@ -411,6 +466,11 @@
                       Desactivar
                     </button>
                   </form>
+                  {% else %}
+                  <button type="button" disabled onclick="mostrarSinPermiso()">
+                    Desactivar
+                  </button>
+                  {% endif %}
                 </td>
               </tr>
               {% endfor %} {% else %}
@@ -425,5 +485,15 @@
         <footer>Sistema NUAM © 2025 | Proyecto Integrado</footer>
       </main>
     </div>
+
+    <script>
+      function mostrarSinPermiso() {
+        const alerta = document.getElementById("alerta-permiso");
+        alerta.style.display = "block";
+        setTimeout(() => {
+          alerta.style.display = "none";
+        }, 3000);
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Iniciar sesión - NUAM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background: #0b5cad;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+      }
+      .login-box {
+        background: #fff;
+        padding: 25px 28px;
+        border-radius: 10px;
+        width: 320px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 18px;
+        margin-bottom: 15px;
+        text-align: center;
+        color: #0b5cad;
+      }
+      label {
+        font-weight: bold;
+        font-size: 13px;
+      }
+      input {
+        width: 100%;
+        padding: 7px 8px;
+        margin: 6px 0 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 5px;
+      }
+      button {
+        width: 100%;
+        background: #0b5cad;
+        color: #fff;
+        border: none;
+        padding: 9px;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #094d91;
+      }
+      .errorlist {
+        background: #fee2e2;
+        border: 1px solid #fca5a5;
+        color: #b91c1c;
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <h1>Acceso NUAM</h1>
+      <form method="post">
+        {% csrf_token %} {{ form.non_field_errors }}
+        <label for="id_username">Usuario</label>
+        <input
+          type="text"
+          name="username"
+          autofocus
+          required
+          id="id_username"
+        />
+
+        <label for="id_password">Contraseña</label>
+        <input type="password" name="password" required id="id_password" />
+
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+  </body>
+</html>

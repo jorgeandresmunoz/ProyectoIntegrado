@@ -1,12 +1,19 @@
 from django.db import models
 
 class Usuario(models.Model):
+    ROL_CHOICES = (
+        ('admin', 'Administrador'),
+        ('analista', 'Analista'),
+        )
+
     nombre = models.CharField(max_length=100)
     correo = models.EmailField(unique=True)
-    rol = models.CharField(max_length=20, default='analista')
+    rol = models.CharField(max_length=20, choices=ROL_CHOICES, default='analista')
+    activo = models.BooleanField(default=True) 
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} ({self.rol})"
+
 
 class Calificacion(models.Model):
     rut_cliente = models.CharField(max_length=20)
@@ -14,8 +21,15 @@ class Calificacion(models.Model):
     tipo_calificacion = models.CharField(max_length=20)
     fecha_calificacion = models.DateField()
     estado = models.CharField(max_length=20, default='vigente')
-    # enlace con usuario:
-    creado_por = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, blank=True)
+    observacion = models.TextField(blank=True, null=True) 
+
+    creado_por = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='calificaciones_creadas'
+    )
 
     def __str__(self):
         return f"{self.rut_cliente} - {self.instrumento}"

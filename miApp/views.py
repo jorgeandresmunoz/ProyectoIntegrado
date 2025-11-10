@@ -6,18 +6,20 @@ from .models import Calificacion, Usuario
 @login_required
 def main_view(request):
     if request.method == "POST":
-        rut = request.POST.get('rut')
-        instrumento = request.POST.get('instrumento')
-        tipo = request.POST.get('calificacion')
-        fecha = request.POST.get('fecha')
-        estado = request.POST.get('estado')
-        observacion = request.POST.get('observacion', '')
+        form_type = request.POST.get('form_type')
 
-        if not (rut and instrumento and tipo and fecha and estado):
-            messages.error(request, "Todos los campos obligatorios deben completarse.")
-            return redirect('main')
+        if form_type == "calificacion":
+            rut = request.POST.get('rut')
+            instrumento = request.POST.get('instrumento')
+            tipo = request.POST.get('calificacion')
+            fecha = request.POST.get('fecha')
+            estado = request.POST.get('estado')
+            observacion = request.POST.get('observacion', '')
 
-        try:
+            if not (rut and instrumento and tipo and fecha and estado):
+                messages.error(request, "Todos los campos obligatorios deben completarse.")
+                return redirect('main')
+
             Calificacion.objects.create(
                 rut_cliente=rut,
                 instrumento=instrumento,
@@ -27,28 +29,44 @@ def main_view(request):
                 observacion=observacion,
             )
             messages.success(request, "Calificación registrada correctamente.")
-        except Exception:
-            messages.error(request, "Ocurrió un problema al guardar la calificación.")
-        return redirect('main')
+            return redirect('main')
+
+        # ---- Registrar usuario ----
+        elif form_type == "usuario":
+            nombre = request.POST.get('nombre')
+            correo = request.POST.get('correo')
+            rol = request.POST.get('rol', 'analista')
+
+            if not (nombre and correo):
+                messages.error(request, "Nombre y correo son obligatorios.")
+                return redirect('main')
+
+            if Usuario.objects.filter(correo=correo).exists():
+                messages.error(request, "Ya existe un usuario con ese correo.")
+                return redirect('main')
+
+            Usuario.objects.create(nombre=nombre, correo=correo, rol=rol)
+            messages.success(request, "Usuario creado correctamente.")
+            return redirect('main')
 
     calificaciones = Calificacion.objects.all().order_by('-fecha_calificacion')
     usuarios = Usuario.objects.all().order_by('nombre')
-    return render(request, 'main.html', {'calificaciones': calificaciones, 'usuarios': usuarios})
+
+    return render(request, 'main.html', {
+        'calificaciones': calificaciones,
+        'usuarios': usuarios
+    })
 
 
 @login_required
 def editar_usuario(request, id):
     usuario = get_object_or_404(Usuario, id=id)
+
     if request.method == 'POST':
-        nuevo_nombre = request.POST.get('nombre')
-        nuevo_correo = request.POST.get('correo')
-        nuevo_rol = request.POST.get('rol')
-
-        usuario.nombre = nuevo_nombre or usuario.nombre
-        usuario.correo = nuevo_correo or usuario.correo
-        usuario.rol = nuevo_rol or usuario.rol
+        usuario.nombre = request.POST.get('nombre', usuario.nombre)
+        usuario.correo = request.POST.get('correo', usuario.correo)
+        usuario.rol = request.POST.get('rol', usuario.rol)
         usuario.save()
-
         messages.success(request, "Usuario editado correctamente.")
         return redirect('main')
 
@@ -57,10 +75,12 @@ def editar_usuario(request, id):
 
 @login_required
 def desactivar_usuario(request, id):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permisos para desactivar usuarios.")
+        return redirect('main')
+
     usuario = get_object_or_404(Usuario, id=id)
-    try:
-        usuario.delete()  # podrías cambiar por usuario.activo=False si agregas ese campo
-        messages.success(request, f"Usuario '{usuario.nombre}' eliminado correctamente.")
-    except Exception:
-        messages.error(request, "No se pudo eliminar el usuario.")
+    usuario.activo = False
+    usuario.save()
+    messages.success(request, f"Usuario '{usuario.nombre}' desactivado correctamente.")
     return redirect('main')
