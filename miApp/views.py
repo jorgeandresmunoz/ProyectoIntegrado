@@ -8,6 +8,7 @@ def main_view(request):
     if request.method == "POST":
         form_type = request.POST.get('form_type')
 
+        # ---------- FORM CALIFICACIÓN ----------
         if form_type == "calificacion":
             rut = request.POST.get('rut')
             instrumento = request.POST.get('instrumento')
@@ -27,11 +28,13 @@ def main_view(request):
                 fecha_calificacion=fecha,
                 estado=estado,
                 observacion=observacion,
+                # si quieres dejar trazabilidad:
+                # creado_por=Usuario.objects.filter(correo=request.user.email).first()
             )
             messages.success(request, "Calificación registrada correctamente.")
             return redirect('main')
 
-        # ---- Registrar usuario ----
+        # ---------- FORM USUARIO ----------
         elif form_type == "usuario":
             nombre = request.POST.get('nombre')
             correo = request.POST.get('correo')
@@ -45,12 +48,18 @@ def main_view(request):
                 messages.error(request, "Ya existe un usuario con ese correo.")
                 return redirect('main')
 
-            Usuario.objects.create(nombre=nombre, correo=correo, rol=rol)
+            Usuario.objects.create(
+                nombre=nombre,
+                correo=correo,
+                rol=rol,
+                activo=True
+            )
             messages.success(request, "Usuario creado correctamente.")
             return redirect('main')
 
+    # 👇 AQUÍ EL CAMBIO IMPORTANTE
     calificaciones = Calificacion.objects.all().order_by('-fecha_calificacion')
-    usuarios = Usuario.objects.all().order_by('nombre')
+    usuarios = Usuario.objects.filter(activo=True).order_by('nombre')
 
     return render(request, 'main.html', {
         'calificaciones': calificaciones,
