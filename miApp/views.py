@@ -28,8 +28,7 @@ def main_view(request):
                 fecha_calificacion=fecha,
                 estado=estado,
                 observacion=observacion,
-                # si quieres dejar trazabilidad:
-                # creado_por=Usuario.objects.filter(correo=request.user.email).first()
+                
             )
             messages.success(request, "Calificación registrada correctamente.")
             return redirect('main')
@@ -57,7 +56,6 @@ def main_view(request):
             messages.success(request, "Usuario creado correctamente.")
             return redirect('main')
 
-    # 👇 AQUÍ EL CAMBIO IMPORTANTE
     calificaciones = Calificacion.objects.all().order_by('-fecha_calificacion')
     usuarios = Usuario.objects.filter(activo=True).order_by('nombre')
 
