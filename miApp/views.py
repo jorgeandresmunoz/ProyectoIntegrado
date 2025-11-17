@@ -1,14 +1,104 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import Calificacion, Usuario
+
+
+def login_view(request):
+    """
+    Login usando:
+    - correo + clave del modelo Usuario
+    - bloqueo tras 3 intentos fallidos
+    - creación/uso de un User de Django para @login_required
+    """
+    if request.method == "POST":
+        correo = request.POST.get("correo")
+        clave = request.POST.get("clave")
+
+        # Buscar Usuario de negocio
+        usuario_negocio = Usuario.objects.filter(correo=correo, activo=True).first()
+
+        if not usuario_negocio:
+            messages.error(request, "Correo o contraseña incorrectos.")
+            return render(request, "registration/login.html")
+
+        # ¿Está bloqueado?
+        if usuario_negocio.bloqueado:
+            messages.error(
+                request,
+                "Tu cuenta está BLOQUEADA por intentos fallidos. Contacta al administrador."
+            )
+            return render(request, "registration/login.html")
+
+        # ¿Tiene contraseña asignada?
+        if not usuario_negocio.password:
+            messages.error(
+                request,
+                "Tu usuario no tiene contraseña asignada. Pide al administrador que la configure."
+            )
+            return render(request, "registration/login.html")
+
+        # Comparar la clave que escribió con la guardada en Usuario
+        if clave != usuario_negocio.password:
+            usuario_negocio.intentos_fallidos += 1
+
+            if usuario_negocio.intentos_fallidos >= 3:
+                usuario_negocio.bloqueado = True
+                messages.error(
+                    request,
+                    "Has alcanzado 3 intentos fallidos. Tu cuenta ha sido BLOQUEADA."
+                )
+            else:
+                restantes = 3 - usuario_negocio.intentos_fallidos
+                messages.error(
+                    request,
+                    f"Correo o contraseña incorrectos. Intentos restantes: {restantes}"
+                )
+
+            usuario_negocio.save()
+            return render(request, "registration/login.html")
+
+        # === LOGIN CORRECTO ===
+        # Resetear intentos
+        usuario_negocio.intentos_fallidos = 0
+        usuario_negocio.bloqueado = False
+        usuario_negocio.save()
+
+        # Crear o actualizar un User de Django para usar @login_required
+        user_django, created = User.objects.get_or_create(
+            username=correo,
+            defaults={"email": correo}
+        )
+
+        # Rol admin -> darle permisos de superuser/staff en Django
+        if usuario_negocio.rol == "admin":
+            user_django.is_superuser = True
+            user_django.is_staff = True
+        else:
+            user_django.is_superuser = False
+            # si quieres que sólo admin entre al admin de Django:
+            user_django.is_staff = False
+
+        user_django.save()
+
+        # Iniciar sesión en Django
+        login(request, user_django)
+
+        return redirect("main")
+
+    # GET -> mostrar formulario
+    return render(request, "registration/login.html")
 
 @login_required
 def main_view(request):
     if request.method == "POST":
         form_type = request.POST.get('form_type')
+        usuario_negocio = None
+        if request.user.email:
+            usuario_negocio = Usuario.objects.filter(correo=request.user.email).first()
 
-        # ---------- FORM CALIFICACIÓN ----------
         if form_type == "calificacion":
             rut = request.POST.get('rut')
             instrumento = request.POST.get('instrumento')
@@ -28,12 +118,11 @@ def main_view(request):
                 fecha_calificacion=fecha,
                 estado=estado,
                 observacion=observacion,
-                
+                creado_por=usuario_negocio 
             )
             messages.success(request, "Calificación registrada correctamente.")
             return redirect('main')
 
-        # ---------- FORM USUARIO ----------
         elif form_type == "usuario":
             nombre = request.POST.get('nombre')
             correo = request.POST.get('correo')
@@ -51,7 +140,9 @@ def main_view(request):
                 nombre=nombre,
                 correo=correo,
                 rol=rol,
-                activo=True
+                activo=True,
+                intentos_fallidos=0,
+                bloqueado=False
             )
             messages.success(request, "Usuario creado correctamente.")
             return redirect('main')
@@ -90,4 +181,23 @@ def desactivar_usuario(request, id):
     usuario.activo = False
     usuario.save()
     messages.success(request, f"Usuario '{usuario.nombre}' desactivado correctamente.")
+    return redirect('main')
+
+
+@login_required
+def desbloquear_usuario(request, id):
+    """
+    Permite a un superuser DESBLOQUEAR un usuario:
+    - pone intentos_fallidos = 0
+    - bloqueado = False
+    """
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permisos para desbloquear usuarios.")
+        return redirect('main')
+
+    usuario = get_object_or_404(Usuario, id=id)
+    usuario.intentos_fallidos = 0
+    usuario.bloqueado = False
+    usuario.save()
+    messages.success(request, f"Usuario '{usuario.nombre}' fue desbloqueado correctamente.")
     return redirect('main')

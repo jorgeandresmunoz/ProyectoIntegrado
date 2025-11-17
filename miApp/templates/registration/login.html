@@ -14,72 +14,139 @@
         min-height: 100vh;
         margin: 0;
       }
+
       .login-box {
         background: #fff;
-        padding: 25px 28px;
-        border-radius: 10px;
-        width: 320px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        padding: 30px 30px;
+        border-radius: 12px;
+        width: 330px;
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+        animation: aparecer 0.3s ease-out;
       }
+
+      @keyframes aparecer {
+        from {
+          transform: translateY(10px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
       h1 {
-        font-size: 18px;
-        margin-bottom: 15px;
+        font-size: 20px;
+        margin-bottom: 18px;
         text-align: center;
         color: #0b5cad;
       }
+
       label {
         font-weight: bold;
         font-size: 13px;
+        color: #1f2937;
       }
+
       input {
         width: 100%;
-        padding: 7px 8px;
+        padding: 8px 9px;
         margin: 6px 0 14px;
         border: 1px solid #d1d5db;
-        border-radius: 5px;
+        border-radius: 6px;
+        font-size: 13px;
+        background: #f9fafb;
       }
+
+      input:focus {
+        border-color: #0b5cad;
+        background: #ffffff;
+        outline: 2px solid rgba(11, 92, 173, 0.25);
+      }
+
       button {
         width: 100%;
         background: #0b5cad;
         color: #fff;
         border: none;
-        padding: 9px;
-        border-radius: 5px;
+        padding: 10px;
+        border-radius: 6px;
         font-weight: bold;
         cursor: pointer;
+        font-size: 14px;
+        transition: background 0.15s ease;
       }
+
       button:hover {
         background: #094d91;
       }
-      .errorlist {
+
+      /* Mensajes de Django */
+      .msg {
         background: #fee2e2;
         border: 1px solid #fca5a5;
         color: #b91c1c;
-        padding: 6px 10px;
+        padding: 8px 10px;
         border-radius: 6px;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
         font-size: 13px;
+      }
+
+      .msg.success {
+        background: #e6f9ee;
+        border-color: #7cd4a7;
+        color: #166534;
+      }
+
+      .seguridad {
+        margin-top: 10px;
+        font-size: 11px;
+        color: #6b7280;
+        line-height: 1.4;
+        text-align: center;
       }
     </style>
   </head>
+
   <body>
     <div class="login-box">
       <h1>Acceso NUAM</h1>
-      <form method="post">
-        {% csrf_token %} {{ form.non_field_errors }}
-        <label for="id_username">Usuario</label>
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="msg {% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <label for="correo">Correo</label>
         <input
-          type="text"
-          name="username"
-          autofocus
+          type="email"
+          name="correo"
+          id="correo"
+          placeholder="usuario@nuam.cl"
           required
-          id="id_username"
         />
 
-        <label for="id_password">Contraseña</label>
-        <input type="password" name="password" required id="id_password" />
+        <label for="clave">Contraseña</label>
+        <input
+          type="password"
+          name="clave"
+          id="clave"
+          placeholder="Ingresa tu clave"
+          required
+        />
 
         <button type="submit">Entrar</button>
+
+        <p class="seguridad">
+          🔒 Por seguridad, después de <strong>3 intentos fallidos</strong> tu cuenta será bloqueada.<br />
+          Un administrador deberá desbloquearla.
+        </p>
       </form>
     </div>
   </body>

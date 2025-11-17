@@ -4,16 +4,19 @@ class Usuario(models.Model):
     ROL_CHOICES = (
         ('admin', 'Administrador'),
         ('analista', 'Analista'),
-        )
+    )
 
     nombre = models.CharField(max_length=100)
     correo = models.EmailField(unique=True)
     rol = models.CharField(max_length=20, choices=ROL_CHOICES, default='analista')
-    activo = models.BooleanField(default=True) 
+    activo = models.BooleanField(default=True)
+
+    password = models.CharField(max_length=128, blank=True)
+    intentos_fallidos = models.PositiveIntegerField(default=0)
+    bloqueado = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.nombre} ({self.rol})"
-
 
 class Calificacion(models.Model):
     rut_cliente = models.CharField(max_length=20)
