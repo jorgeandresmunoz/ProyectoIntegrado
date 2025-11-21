@@ -7,32 +7,21 @@ from .models import Calificacion, Usuario
 
 
 def login_view(request):
-    """
-    Login usando:
-    - correo + clave del modelo Usuario
-    - bloqueo tras 3 intentos fallidos
-    - creación/uso de un User de Django para @login_required
-    """
     if request.method == "POST":
         correo = request.POST.get("correo")
         clave = request.POST.get("clave")
-
-        # Buscar Usuario de negocio
         usuario_negocio = Usuario.objects.filter(correo=correo, activo=True).first()
 
         if not usuario_negocio:
             messages.error(request, "Correo o contraseña incorrectos.")
             return render(request, "registration/login.html")
 
-        # ¿Está bloqueado?
         if usuario_negocio.bloqueado:
             messages.error(
                 request,
                 "Tu cuenta está BLOQUEADA por intentos fallidos. Contacta al administrador."
             )
             return render(request, "registration/login.html")
-
-        # ¿Tiene contraseña asignada?
         if not usuario_negocio.password:
             messages.error(
                 request,
@@ -40,7 +29,6 @@ def login_view(request):
             )
             return render(request, "registration/login.html")
 
-        # Comparar la clave que escribió con la guardada en Usuario
         if clave != usuario_negocio.password:
             usuario_negocio.intentos_fallidos += 1
 
@@ -60,36 +48,31 @@ def login_view(request):
             usuario_negocio.save()
             return render(request, "registration/login.html")
 
-        # === LOGIN CORRECTO ===
-        # Resetear intentos
         usuario_negocio.intentos_fallidos = 0
         usuario_negocio.bloqueado = False
         usuario_negocio.save()
-
-        # Crear o actualizar un User de Django para usar @login_required
         user_django, created = User.objects.get_or_create(
             username=correo,
             defaults={"email": correo}
         )
 
-        # Rol admin -> darle permisos de superuser/staff en Django
+        if user_django.email != correo:
+            user_django.email = correo
+
         if usuario_negocio.rol == "admin":
             user_django.is_superuser = True
             user_django.is_staff = True
         else:
             user_django.is_superuser = False
-            # si quieres que sólo admin entre al admin de Django:
             user_django.is_staff = False
 
         user_django.save()
-
-        # Iniciar sesión en Django
         login(request, user_django)
 
         return redirect("main")
 
-    # GET -> mostrar formulario
     return render(request, "registration/login.html")
+
 
 @login_required
 def main_view(request):
@@ -98,7 +81,6 @@ def main_view(request):
         usuario_negocio = None
         if request.user.email:
             usuario_negocio = Usuario.objects.filter(correo=request.user.email).first()
-
         if form_type == "calificacion":
             rut = request.POST.get('rut')
             instrumento = request.POST.get('instrumento')
@@ -118,12 +100,16 @@ def main_view(request):
                 fecha_calificacion=fecha,
                 estado=estado,
                 observacion=observacion,
-                creado_por=usuario_negocio 
+                creado_por=usuario_negocio
             )
             messages.success(request, "Calificación registrada correctamente.")
             return redirect('main')
 
         elif form_type == "usuario":
+            if not request.user.is_superuser:
+                messages.error(request, "No tienes permisos para crear usuarios.")
+                return redirect('main')
+
             nombre = request.POST.get('nombre')
             correo = request.POST.get('correo')
             rol = request.POST.get('rol', 'analista')
@@ -160,15 +146,28 @@ def main_view(request):
 def editar_usuario(request, id):
     usuario = get_object_or_404(Usuario, id=id)
 
+    es_admin = request.user.is_superuser
+    es_mi_usuario = (request.user.email == usuario.correo)
+
+    if not (es_admin or es_mi_usuario):
+        messages.error(request, "No tienes permisos para editar este usuario.")
+        return redirect('main')
+
     if request.method == 'POST':
         usuario.nombre = request.POST.get('nombre', usuario.nombre)
         usuario.correo = request.POST.get('correo', usuario.correo)
-        usuario.rol = request.POST.get('rol', usuario.rol)
+
+        if es_admin:
+            usuario.rol = request.POST.get('rol', usuario.rol)
+
         usuario.save()
         messages.success(request, "Usuario editado correctamente.")
         return redirect('main')
 
-    return render(request, 'editar_usuario.html', {'usuario': usuario})
+    return render(request, 'editar_usuario.html', {
+        'usuario': usuario,
+        'es_admin': es_admin,
+    })
 
 
 @login_required
@@ -186,11 +185,6 @@ def desactivar_usuario(request, id):
 
 @login_required
 def desbloquear_usuario(request, id):
-    """
-    Permite a un superuser DESBLOQUEAR un usuario:
-    - pone intentos_fallidos = 0
-    - bloqueado = False
-    """
     if not request.user.is_superuser:
         messages.error(request, "No tienes permisos para desbloquear usuarios.")
         return redirect('main')
@@ -200,4 +194,50 @@ def desbloquear_usuario(request, id):
     usuario.bloqueado = False
     usuario.save()
     messages.success(request, f"Usuario '{usuario.nombre}' fue desbloqueado correctamente.")
+    return redirect('main')
+
+
+@login_required
+def editar_calificacion(request, id):
+    calificacion = get_object_or_404(Calificacion, id=id)
+
+    usuario_negocio = None
+    if request.user.email:
+        usuario_negocio = Usuario.objects.filter(correo=request.user.email).first()
+
+    es_admin = request.user.is_superuser
+    es_creador = usuario_negocio and calificacion.creado_por and (calificacion.creado_por.id == usuario_negocio.id)
+
+    if not (es_admin or es_creador):
+        messages.error(request, "No tienes permisos para editar esta calificación.")
+        return redirect('main')
+
+    if request.method == 'POST':
+        calificacion.rut_cliente = request.POST.get('rut', calificacion.rut_cliente)
+        calificacion.instrumento = request.POST.get('instrumento', calificacion.instrumento)
+        calificacion.tipo_calificacion = request.POST.get('tipo_calificacion', calificacion.tipo_calificacion)
+        calificacion.fecha_calificacion = request.POST.get('fecha', calificacion.fecha_calificacion)
+        calificacion.estado = request.POST.get('estado', calificacion.estado)
+        calificacion.observacion = request.POST.get('observacion', calificacion.observacion)
+
+        calificacion.save()
+        messages.success(request, "Calificación editada correctamente.")
+        return redirect('main')
+
+    return render(request, 'editar_calificacion.html', {
+        'calificacion': calificacion
+    })
+
+
+@login_required
+def desactivar_calificacion(request, id):
+    if not request.user.is_superuser:
+        messages.error(request, "No tienes permisos para desactivar calificaciones.")
+        return redirect('main')
+
+    calificacion = get_object_or_404(Calificacion, id=id)
+
+    calificacion.estado = 'vencida'
+    calificacion.save()
+    messages.success(request, "La calificación fue marcada como vencida.")
     return redirect('main')

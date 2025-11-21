@@ -7,6 +7,8 @@ from miApp.views import (
     editar_usuario,
     desactivar_usuario,
     desbloquear_usuario,
+    editar_calificacion,      
+    desactivar_calificacion,   
 )
 
 urlpatterns = [
@@ -18,4 +20,6 @@ urlpatterns = [
     path('usuarios/<int:id>/editar/', editar_usuario, name='editar_usuario'),
     path('usuarios/<int:id>/desactivar/', desactivar_usuario, name='desactivar_usuario'),
     path('usuarios/<int:id>/desbloquear/', desbloquear_usuario, name='desbloquear_usuario'),
+    path('calificaciones/<int:id>/editar/', editar_calificacion, name='editar_calificacion'),
+    path('calificaciones/<int:id>/desactivar/', desactivar_calificacion, name='desactivar_calificacion'),
 ]

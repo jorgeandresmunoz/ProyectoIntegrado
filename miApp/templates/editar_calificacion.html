@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Editar calificación - NUAM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      :root {
+        --azul: #0b5cad;
+        --azul-oscuro: #094d91;
+        --gris-fondo: #f3f4f6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: var(--gris-fondo);
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      .card {
+        max-width: 650px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px 22px;
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.05);
+        border: 1px solid rgba(0,0,0,0.03);
+      }
+      h1 {
+        font-size: 18px;
+        margin-top: 0;
+        color: var(--azul);
+        border-bottom: 2px solid var(--azul);
+        padding-bottom: 8px;
+        letter-spacing: 0.2px;
+      }
+      form {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(200px, 1fr));
+        gap: 12px 16px;
+      }
+      label {
+        display: block;
+        margin-bottom: 3px;
+        font-size: 13px;
+        font-weight: bold;
+      }
+      input,
+      select {
+        width: 100%;
+        padding: 7px 8px;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        font-size: 13px;
+        background: #fff;
+      }
+      input:focus,
+      select:focus {
+        outline: 2px solid rgba(11, 92, 173, 0.1);
+        border-color: var(--azul);
+      }
+      .full {
+        grid-column: 1 / -1;
+      }
+      button {
+        margin-top: 10px;
+        background-color: var(--azul);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 9px 16px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 13px;
+        transition: background 0.15s ease;
+      }
+      button:hover {
+        background-color: var(--azul-oscuro);
+      }
+      .links {
+        margin-top: 14px;
+        font-size: 13px;
+      }
+      .links a {
+        color: var(--azul);
+        text-decoration: none;
+      }
+      .links a:hover {
+        text-decoration: underline;
+      }
+      @media (max-width: 700px) {
+        form {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Editar calificación</h1>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div>
+        <label for="rut">RUT Cliente *</label>
+        <input
+          id="rut"
+          name="rut"
+          type="text"
+          value="{{ calificacion.rut_cliente }}"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="instrumento">Instrumento *</label>
+        <input
+          id="instrumento"
+          name="instrumento"
+          type="text"
+          value="{{ calificacion.instrumento }}"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="tipo_calificacion">Tipo de Calificación *</label>
+        <input
+          id="tipo_calificacion"
+          name="tipo_calificacion"
+          type="text"
+          value="{{ calificacion.tipo_calificacion }}"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="fecha">Fecha *</label>
+        <input
+          id="fecha"
+          name="fecha"
+          type="date"
+          value="{{ calificacion.fecha_calificacion|date:'Y-m-d' }}"
+          required
+        />
+      </div>
+
+      <div>
+        <label for="estado">Estado *</label>
+        <select id="estado" name="estado" required>
+          <option value="vigente" {% if calificacion.estado == 'vigente' %}selected{% endif %}>Vigente</option>
+          <option value="vencida" {% if calificacion.estado == 'vencida' %}selected{% endif %}>Vencida</option>
+          <option value="en_revision" {% if calificacion.estado == 'en_revision' %}selected{% endif %}>En revisión</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label for="observacion">Observación</label>
+        <input
+          id="observacion"
+          name="observacion"
+          type="text"
+          value="{{ calificacion.observacion }}"
+        />
+      </div>
+
+      <div class="full">
+        <button type="submit">Guardar cambios</button>
+      </div>
+    </form>
+
+    <div class="links">
+      <a href="{% url 'main' %}">← Volver al panel principal</a>
+    </div>
+  </div>
+</body>
+</html>
